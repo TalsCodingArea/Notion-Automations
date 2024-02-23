@@ -16,7 +16,6 @@ load_dotenv(dotenv_path=env_path)
 
 app = Flask(__name__)
 slack_event_adapter = SlackEventAdapter(os.environ['SIGNING_SECRET'], '/slack/events', app)
-
 twilio_client = Client(os.environ['ACCOUNT_SID'], os.environ['TWILIO_TOKEN'])
 slack_client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
 BOT_ID = slack_client.api_call("auth.test")['user_id']
@@ -88,7 +87,6 @@ def getWeeklySum(category):
             property_value = page['properties']["Amount"]['number']
             sum+=property_value
     '''
-
 
 
 @slack_event_adapter.on('message')
