@@ -19,6 +19,7 @@ The first struggle was when I discovered notion doesn't have native webhooks (fi
 but then I saw notion has an automation with Slack! so I started reading about the Slack API and used it as my trigger in this automation.
 
 THE AUTOMATION'S PROCESS
+
 When a page is created inside my notion database, using a notion automation, a message is sent inside a Slack channel that I've created for this automation.
 The message that is sent inside the Slack channel is triggering a function that is calculating how much I've spent so fat this week on each category.
 Using an SMS service API an SMS is sent to my phone letting me know how much I've spent on each category so far this week.
