@@ -58,36 +58,6 @@ def getWeeklySum(category):
     else:
         print("Error:", data_json)
 
-    '''
-    notion=Client(auth=os.environ['NOTION_API_TOKEN'])
-    sum=0
-    first_day_of_week = (datetime.now() - timedelta(days=datetime.today().weekday())).isoformat()
-    filter_params = {
-        "database_id": os.environ['DATABASE_ID'],
-        "filter": {
-            "and": [
-                {
-                    property: "Date",
-                    "date": {
-                        "on_or_after":first_day_of_week
-                    }
-                },
-                {
-                    property: 'Category',
-                    "multi_select": {
-                        "contains": category
-                    }
-                }
-            ]
-        }
-    }
-    filtered_pages = notion.databases.query(filter_params)
-    for page in filtered_pages['results']:
-        if "Amount" in page['properties'].keys():
-            property_value = page['properties']["Amount"]['number']
-            sum+=property_value
-    '''
-
 
 @slack_event_adapter.on('message')
 def message(payload):
