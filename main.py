@@ -98,7 +98,7 @@ def message(payload):
     lifestyle_spent=str(getWeeklySum("Lifestyle 🏞️"))
     spendings_spent=str(getWeeklySum("Spendings 📦"))
     message = twilio_client.messages.create(
-        body="So far this week you've spent " + lifestyle_spent + " on lifestyle 🏞️, and " + spendings_spent + " on spendings 📦",
+        body="lifestyle 🏞️: " + lifestyle_spent + "                        spendings 📦: " + spendings_spent,
         from_=os.environ['TWILIO_NUMBER'],
         to=os.environ['TARGET_NUMBER']
     )
