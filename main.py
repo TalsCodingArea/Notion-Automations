@@ -16,9 +16,30 @@ load_dotenv(dotenv_path=env_path)
 
 app = Flask(__name__)
 slack_event_adapter = SlackEventAdapter(os.environ['SIGNING_SECRET'], '/slack/events', app)
-twilio_client = Client(os.environ['ACCOUNT_SID'], os.environ['TWILIO_TOKEN'])
 slack_client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
 BOT_ID = slack_client.api_call("auth.test")['user_id']
+
+
+@slack_event_adapter.on('message')
+def message(payload):
+    event = payload.get('event', {})
+    channel_id = event.get('channel')
+    user_id = event.get('user')
+    text = str(event.get('text'))
+    if text.__contains__("lifestyle"):
+        lifestyle_spent=str(getWeeklySum("Lifestyle 🏞️"))
+        send_pushover_notification('LIFESTYLE', "You've spent " + lifestyle_spent + " this week")
+    if text.__contains__("spendings"):
+        spendings_spent=str(getWeeklySum("Spendings 📦"))
+        send_pushover_notification('SPENDINGS', "You've spent " + spendings_spent + " this week")
+    
+
+
+
+if __name__ == "__main__":
+    app.run(debug=True, port=8080)
+
+# Functions
 
 def getWeeklySum(category):
     conn = http.client.HTTPSConnection("api.notion.com")
@@ -58,23 +79,15 @@ def getWeeklySum(category):
     else:
         print("Error:", data_json)
 
-
-@slack_event_adapter.on('message')
-def message(payload):
-    event = payload.get('event', {})
-    channel_id = event.get('channel')
-    user_id = event.get('user')
-    text = str(event.get('text'))
-    lifestyle_spent=str(getWeeklySum("Lifestyle 🏞️"))
-    spendings_spent=str(getWeeklySum("Spendings 📦"))
-    message = twilio_client.messages.create(
-        body="lifestyle 🏞️: " + lifestyle_spent + "                        spendings 📦: " + spendings_spent,
-        from_=os.environ['TWILIO_NUMBER'],
-        to=os.environ['TARGET_NUMBER']
-    )
+def send_pushover_notification(subject, message):
+    url = 'https://api.pushover.net/1/messages.json'
+    payload = {'token': os.environ[subject + '_API_TOKEN'], 'user': os.environ['PUSHOVER_USER_KEY'], 'message': message}
+    r = requests.post(url, data=payload)
+    if r.status_code == 200:
+        print('Notification sent')
+    else:
+        print(f"Failed to send notification, status code: {r.status_code}")
 
 
 
-if __name__ == "__main__":
-    app.run(debug=True, port=8080)
-
+#End of functions
