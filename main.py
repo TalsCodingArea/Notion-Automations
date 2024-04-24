@@ -23,8 +23,6 @@ BOT_ID = slack_client.api_call("auth.test")['user_id']
 @slack_event_adapter.on('message')
 def message(payload):
     event = payload.get('event', {})
-    channel_id = event.get('channel')
-    user_id = event.get('user')
     text = str(event.get('text'))
     if text.__contains__("lifestyle"):
         lifestyle_spent=str(getWeeklySum("Lifestyle 🏞️"))
@@ -87,7 +85,5 @@ def send_pushover_notification(subject, message):
         print('Notification sent')
     else:
         print(f"Failed to send notification, status code: {r.status_code}")
-
-
 
 #End of functions
