@@ -19,7 +19,6 @@ slack_event_adapter = SlackEventAdapter(os.environ['SIGNING_SECRET'], '/slack/ev
 slack_client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
 BOT_ID = slack_client.api_call("auth.test")['user_id']
 
-
 @slack_event_adapter.on('message')
 def message(payload):
     event = payload.get('event', {})
@@ -88,7 +87,7 @@ def getDailySuccess():
         'Content-Type': 'application/json'
     }
     today = (datetime.now()).isoformat()
-    intended_payload = {
+    payload = {
         'filter': {
             'and': [
                 {
@@ -100,35 +99,19 @@ def getDailySuccess():
             ],
         },
     }
-    reality_payload = {
-        'filter': {
-            'and': [
-                {
-                    'property': 'Date',
-                    'date': {
-                        'on_or_after': today,
-                    },
-                },
-            ],
-        },
-    }
-    conn.request('POST', f'/v1/databases/' + os.environ['DAILY_DATABASE_ID'] + '/query', body=json.dumps(intended_payload), headers=headers)
-    res = conn.getresponse()
-    intended_data = res.read()
-    intended_data_json = json.loads(intended_data.decode('utf-8'))
 
-    conn.request('POST', f'/v1/databases/' + os.environ['DAILY_DATABASE_ID'] + '/query', body=json.dumps(reality_payload), headers=headers)
+    conn.request('POST', f'/v1/databases/' + os.environ['DAILY_DATABASE_ID'] + '/query', body=json.dumps(payload), headers=headers)
     res = conn.getresponse()
-    reality_data = res.read()
-    reality_data_json = json.loads(reality_data.decode('utf-8'))
+    data = res.read()
+    data_json = json.loads(data.decode('utf-8'))
 
-    if 'results' in intended_data_json and 'results' in reality_data_json:
-        intended_sum = sum(item['properties']['Amount']['number'] for item in intended_data_json['results'] if 'Amount' in item['properties'])
-        reality_sum = sum(item['properties']['Amount']['number'] for item in reality_data_json['results'] if 'Amount' in item['properties'])
+    if 'results' in data_json:
+        intended_sum = sum(item['properties']['Intended Study']['number'] for item in data_json['results'] if 'Intended Study' in item['properties'])
+        reality_sum = sum(item['properties']['Reality Study']['number'] for item in data_json['results'] if 'Reality Study' in item['properties'])
         result = float(reality_sum) / float(intended_sum)
         return(result)
     else:
-        print("Error:", intended_data_json, reality_data_json)
+        print("Error:", data_json)
 
 def send_pushover_notification(subject, message):
     url = 'https://api.pushover.net/1/messages.json'
@@ -140,3 +123,4 @@ def send_pushover_notification(subject, message):
         print(f"Failed to send notification, status code: {r.status_code}")
 
 #End of functions
+
