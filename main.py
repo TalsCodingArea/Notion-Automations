@@ -32,7 +32,7 @@ def message(payload):
         send_pushover_notification('SPENDINGS', "You've spent " + spendings_spent + " this week")
     if text.__contains__("Daily Success"):
         daily_success=str(int(getDailySuccess()*100))
-        send_pushover_notification('SPENDINGS', "You've achieved " + daily_success + "% of your daily goal")
+        send_pushover_notification('DAILY_SUCCESS', "You've achieved " + daily_success + "% of your daily goal")
     
 
 
@@ -112,12 +112,12 @@ def getDailySuccess():
             ],
         },
     }
-    conn.request('POST', f'/v1/databases/' + os.environ['DATABASE_ID'] + '/query', body=json.dumps(intended_payload), headers=headers)
+    conn.request('POST', f'/v1/databases/' + os.environ['DAILY_DATABASE_ID'] + '/query', body=json.dumps(intended_payload), headers=headers)
     res = conn.getresponse()
     intended_data = res.read()
     intended_data_json = json.loads(intended_data.decode('utf-8'))
 
-    conn.request('POST', f'/v1/databases/' + os.environ['DATABASE_ID'] + '/query', body=json.dumps(reality_payload), headers=headers)
+    conn.request('POST', f'/v1/databases/' + os.environ['DAILY_DATABASE_ID'] + '/query', body=json.dumps(reality_payload), headers=headers)
     res = conn.getresponse()
     reality_data = res.read()
     reality_data_json = json.loads(reality_data.decode('utf-8'))
