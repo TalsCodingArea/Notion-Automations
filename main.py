@@ -32,7 +32,7 @@ def message(payload):
         send_pushover_notification('SPENDINGS', "You've spent " + spendings_spent + " this week")
     if text.__contains__("Daily Success"):
         daily_success=str(int(getDailySuccess()*100))
-        send_pushover_notification('DAILY_SUCCESS', "You've achieved " + daily_success + "% of your daily goal")
+        send_pushover_notification('SPENDINGS', "You've achieved " + daily_success + "% of your daily goal")
     
 
 
