@@ -86,7 +86,8 @@ def getDailySuccess():
         'Notion-Version': '2021-08-16',
         'Content-Type': 'application/json'
     }
-    today = (datetime.now()).isoformat()
+    today = (datetime.now()).isoformat().split('T')[0]
+    
     payload = {
         'filter': {
             'and': [
