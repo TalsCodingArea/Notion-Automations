@@ -40,7 +40,6 @@ if __name__ == "__main__":
 # Functions
 
 def getWeeklySum(category, person):
-    conn = http.client.HTTPSConnection("api.notion.com")
     headers = {
         'Authorization': 'Bearer ' + os.environ['NOTION_API_TOKEN'],
         'Notion-Version': '2021-08-16',
@@ -71,16 +70,16 @@ def getWeeklySum(category, person):
             ],
         }
     }
-    conn.request('POST', f'/v1/databases/' + os.environ['DATABASE_ID'] + '/query', body=json.dumps(payload), headers=headers)
-    res = conn.getresponse()
-    data = res.read()
-    data_json = json.loads(data.decode('utf-8'))
-
-    if 'results' in data_json:
-        amount_sum = sum(item['properties']['Amount']['number'] for item in data_json['results'] if 'Amount' in item['properties'])
-        return(amount_sum)
+    response = requests.post("https://api.notion.com/v1/databases/" + os.environ['DATABASE_ID'] + '/query', headers=headers, data=json.dumps(payload))
+    data = response.json()
+    if 'results' in data:
+        results = data['results']
+        amount_sum = sum(item['properties']['Amount']['number'] for item in results if 'Amount' in item['properties'])
+        amount_sum = int(amount_sum*100)
+        amount_sum = float(amount_sum)/100
+        return (amount_sum)
     else:
-        print("Error:", data_json)
+        print("Error:", data)
 
 def getDailySuccess():
     conn = http.client.HTTPSConnection("api.notion.com")
