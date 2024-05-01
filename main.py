@@ -9,7 +9,6 @@ from flask import Flask, request, make_response, Response
 from slackeventsapi import SlackEventAdapter
 from notion_client import Client
 from datetime import datetime, timedelta
-from twilio.rest import Client
 
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
@@ -51,7 +50,7 @@ def getWeeklySum(category, person):
     first_day_of_week = (datetime.now() - timedelta(days=datetime.today().weekday()) - timedelta(days=1)).isoformat()
     payload = {
         'filter': {
-            'and': [
+                'and': [
                 {
                     'property': 'Category',
                     'multi_select': {
@@ -64,14 +63,18 @@ def getWeeklySum(category, person):
                         'on_or_after': first_day_of_week,
                     },
                 },
+                {
+                    'property': 'Tag',
+                    'multi_select': {
+                        'contains': person,
+                    },
+                }
             ],
-        },
+        }
     }
-    print (person)
     conn.request('POST', f'/v1/databases/' + os.environ['DATABASE_ID'] + '/query', body=json.dumps(payload), headers=headers)
     res = conn.getresponse()
     data = res.read()
-    print(data)
     data_json = json.loads(data.decode('utf-8'))
 
     if 'results' in data_json:
