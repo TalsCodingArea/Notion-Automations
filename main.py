@@ -45,7 +45,8 @@ def getWeeklySum(category, person):
         'Notion-Version': '2021-08-16',
         'Content-Type': 'application/json'
     }
-    first_day_of_week = (datetime.now() - timedelta(days=datetime.today().weekday())).isoformat()
+    first_day_of_week = (datetime.now() - timedelta(days=datetime.today().weekday() + 1)).isoformat()
+    first_day_of_week = first_day_of_week.split('T')[0]
     payload = {
         "filter":{
             'and': [
