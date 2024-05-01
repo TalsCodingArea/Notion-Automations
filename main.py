@@ -66,7 +66,7 @@ def getWeeklySum(category, person):
                 },
                 {
                     'property': 'Tag',
-                    'select': {
+                    'multi_select': {
                         'contains': person,
                     },
                 }
