@@ -29,7 +29,7 @@ def message(payload):
         daily_success=str(int(getDailySuccess()*100))
         send_pushover_notification('DAILY_SUCCESS', "You've achieved " + daily_success + "% of your daily goal")
     else:
-        pushover_key = text.split()[2] + "_" + text.split()[0]
+        pushover_key = (text.split()[2] + "_" + text.split()[0]).upper()
         spendings_spent=str(getWeeklySum(category, person))
         send_pushover_notification(pushover_key, "You've spent " + spendings_spent + " this week")
     
