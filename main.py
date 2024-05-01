@@ -120,7 +120,7 @@ def getDailySuccess():
 
 def send_pushover_notification(subject, message, person):
     url = 'https://api.pushover.net/1/messages.json'
-    if person == "All":
+    if person == "Tal 👨🏻":
         payload = {'token': os.environ[subject + '_API_TOKEN'], 'user': os.environ['PUSHOVER_USER_KEY'], 'message': message, 'device': "iPhone"}
     else:
         payload = {'token': os.environ[subject + '_API_TOKEN'], 'user': os.environ['PUSHOVER_USER_KEY'], 'message': message, 'device': "Shiri_iphon"}
