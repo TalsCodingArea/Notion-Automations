@@ -22,13 +22,12 @@ BOT_ID = slack_client.api_call("auth.test")['user_id']
 def message(payload):
     event = payload.get('event', {})
     text = str(event.get('text'))
-    category = text.split()[0] + " " + text.split()[1]
-    person = text.split()[2] + " " + text.split()[3]
+    category, person = getCategoryPerson(text)
     if text.__contains__("Daily Success"):
         daily_success=str(int(getDailySuccess()*100))
         send_pushover_notification('DAILY_SUCCESS', "You've achieved " + daily_success + "% of your daily goal")
     else:
-        pushover_key = (text.split()[2] + "_" + text.split()[0]).upper()
+        pushover_key = (person.split()[0] + "_" + category.split()[0]).upper()
         spendings_spent=str(getWeeklySum(category, person))
         send_pushover_notification(pushover_key, "You've spent " + spendings_spent + " this week", person)
     
@@ -41,7 +40,6 @@ if __name__ == "__main__":
 # Functions
 
 def getWeeklySum(category, person):
-    conn = http.client.HTTPSConnection("api.notion.com")
     headers = {
         'Authorization': 'Bearer ' + os.environ['NOTION_API_TOKEN'],
         'Notion-Version': '2021-08-16',
@@ -120,7 +118,7 @@ def getDailySuccess():
 
 def send_pushover_notification(subject, message, person):
     url = 'https://api.pushover.net/1/messages.json'
-    if person == "Tal 👨🏻":
+    if "Tal" in person:
         payload = {'token': os.environ[subject + '_API_TOKEN'], 'user': os.environ['PUSHOVER_USER_KEY'], 'message': message, 'device': "iPhone"}
     else:
         payload = {'token': os.environ[subject + '_API_TOKEN'], 'user': os.environ['PUSHOVER_USER_KEY'], 'message': message, 'device': "Shiri_iphon"}
@@ -129,6 +127,19 @@ def send_pushover_notification(subject, message, person):
         print('Notification sent')
     else:
         print(f"Failed to send notification, status code: {r.status_code}")
+
+def getCategoryPerson(text):
+    if "Lifestyle" in text:
+        category = "Lifestyle 🏞️"
+    if "Spendings" in text:
+        category = "Spendings 📦"
+    if "Car" in text:
+        category = "Car 🚗"
+    if "Tal" in text:
+        person = "Tal 👨🏻"
+    if "Shiri" in text:
+        person = "Shiri 👧🏻"
+    return (category, person)
 
 #End of functions
 
