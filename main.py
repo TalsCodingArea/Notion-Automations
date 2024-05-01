@@ -64,12 +64,6 @@ def getWeeklySum(category, person):
                         'on_or_after': first_day_of_week,
                     },
                 },
-                {
-                    'property': 'Tag',
-                    'multi_select': {
-                        'contains': person,
-                    },
-                },
             ],
         },
     }
