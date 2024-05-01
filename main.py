@@ -73,10 +73,11 @@ def getWeeklySum(category, person):
             ],
         },
     }
+    print (person)
     conn.request('POST', f'/v1/databases/' + os.environ['DATABASE_ID'] + '/query', body=json.dumps(payload), headers=headers)
     res = conn.getresponse()
     data = res.read()
-    
+    print(data)
     data_json = json.loads(data.decode('utf-8'))
 
     if 'results' in data_json:
@@ -122,7 +123,7 @@ def getDailySuccess():
 
 def send_pushover_notification(subject, message):
     url = 'https://api.pushover.net/1/messages.json'
-    payload = {'token': os.environ[subject + '_API_TOKEN'], 'user': os.environ['PUSHOVER_USER_KEY'], 'message': message}
+    payload = {'token': os.environ[subject + '_API_TOKEN'], 'user': os.environ['PUSHOVER_USER_KEY'], 'message': message, 'device': "iPhone"}
     r = requests.post(url, data=payload)
     if r.status_code == 200:
         print('Notification sent')
