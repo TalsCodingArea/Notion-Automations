@@ -23,15 +23,15 @@ BOT_ID = slack_client.api_call("auth.test")['user_id']
 def message(payload):
     event = payload.get('event', {})
     text = str(event.get('text'))
-    if text.__contains__("lifestyle"):
-        lifestyle_spent=str(getWeeklySum("Lifestyle 🏞️"))
-        send_pushover_notification('LIFESTYLE', "You've spent " + lifestyle_spent + " this week")
-    if text.__contains__("spendings"):
-        spendings_spent=str(getWeeklySum("Spendings 📦"))
-        send_pushover_notification('SPENDINGS', "You've spent " + spendings_spent + " this week")
+    category = text.split()[0] + " " + text.split()[1]
+    person = text.split()[2] + " " + text.split()[3]
     if text.__contains__("Daily Success"):
         daily_success=str(int(getDailySuccess()*100))
         send_pushover_notification('DAILY_SUCCESS', "You've achieved " + daily_success + "% of your daily goal")
+    else:
+        pushover_key = text.split()[2] + "_" + text.split()[0]
+        spendings_spent=str(getWeeklySum(category, person))
+        send_pushover_notification(pushover_key, "You've spent " + spendings_spent + " this week")
     
 
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
 # Functions
 
-def getWeeklySum(category):
+def getWeeklySum(category, person):
     conn = http.client.HTTPSConnection("api.notion.com")
     headers = {
         'Authorization': 'Bearer ' + os.environ['NOTION_API_TOKEN'],
@@ -64,6 +64,12 @@ def getWeeklySum(category):
                         'on_or_after': first_day_of_week,
                     },
                 },
+                {
+                    'property': 'Tag',
+                    'select': {
+                        'contains': person,
+                    },
+                }
             ],
         },
     }
