@@ -30,7 +30,7 @@ def message(payload):
     else:
         pushover_key = (text.split()[2] + "_" + text.split()[0]).upper()
         spendings_spent=str(getWeeklySum(category, person))
-        send_pushover_notification(pushover_key, "You've spent " + spendings_spent + " this week")
+        send_pushover_notification(pushover_key, "You've spent " + spendings_spent + " this week", person)
     
 
 
@@ -118,9 +118,12 @@ def getDailySuccess():
     else:
         print("Error:", data_json)
 
-def send_pushover_notification(subject, message):
+def send_pushover_notification(subject, message, person):
     url = 'https://api.pushover.net/1/messages.json'
-    payload = {'token': os.environ[subject + '_API_TOKEN'], 'user': os.environ['PUSHOVER_USER_KEY'], 'message': message, 'device': "iPhone"}
+    if person == "All":
+        payload = {'token': os.environ[subject + '_API_TOKEN'], 'user': os.environ['PUSHOVER_USER_KEY'], 'message': message, 'device': "iPhone"}
+    else:
+        payload = {'token': os.environ[subject + '_API_TOKEN'], 'user': os.environ['PUSHOVER_USER_KEY'], 'message': message, 'device': "Shiri_iphon"}
     r = requests.post(url, data=payload)
     if r.status_code == 200:
         print('Notification sent')
