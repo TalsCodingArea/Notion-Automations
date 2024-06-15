@@ -9,6 +9,7 @@ from flask import Flask, request, make_response, Response
 from slackeventsapi import SlackEventAdapter
 from notion_client import Client
 from datetime import datetime, timedelta
+import dropbox
 
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
