@@ -8,7 +8,7 @@ import http.client
 from flask import Flask, request, make_response, Response
 from slackeventsapi import SlackEventAdapter
 from notion_client import Client
-from datetime import datetime, timedelta
+import datetime
 import dropbox
 
 env_path = Path('.') / '.env'
@@ -39,6 +39,15 @@ if __name__ == "__main__":
     app.run(debug=True, port=8080)
 
 # Functions
+def get_last_sunday():
+    today = datetime.date.today()
+    if today.weekday() == 6:  # Check if today is Sunday
+        today.strftime('%Y-%m-%d')
+        return today
+    else:
+        last_sunday = today - datetime.timedelta(days=today.weekday() + 1)
+        last_sunday.strftime('%Y-%m-%d')
+    return last_sunday
 
 def getWeeklySum(category, person):
     headers = {
@@ -46,8 +55,7 @@ def getWeeklySum(category, person):
         'Notion-Version': '2021-08-16',
         'Content-Type': 'application/json'
     }
-    first_day_of_week = (datetime.now() - timedelta(days=datetime.today().weekday() + 1)).isoformat()
-    first_day_of_week = first_day_of_week.split('T')[0]
+    first_day_of_week = get_last_sunday()
     payload = {
         "filter":{
             'and': [
@@ -144,4 +152,3 @@ def getCategoryPerson(text):
     return (category, person)
 
 #End of functions
-
