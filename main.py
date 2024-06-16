@@ -54,7 +54,7 @@ def getWeeklySum(category, person):
         'Notion-Version': '2021-08-16',
         'Content-Type': 'application/json'
     }
-    first_day_of_week = get_last_sunday()
+    first_day_of_week = str(get_last_sunday())
     payload = {
         "filter":{
             'and': [
